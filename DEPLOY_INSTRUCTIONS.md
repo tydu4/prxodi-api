@@ -8,7 +8,7 @@ Run this one-liner on your VPS to clone the repo, set up a basic environment, an
 git clone https://github.com/tydu4/prxodi-api.git && \
 cd prxodi-api && \
 echo -e "DB_USER=postgres\nDB_PASSWORD=change_me_please\nDB_NAME=events_db" > .env && \
-chmod +x deploy.sh && \
+bash setup_server.sh && \
 ./deploy.sh
 ```
 
