@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Ensure we are in the script's directory
+cd "$(dirname "$0")"
+
 if ! [ -x "$(command -v docker)" ]; then
   echo 'Error: docker is not installed.' >&2
   exit 1
@@ -11,14 +14,15 @@ data_path="./certbot"
 email="tydu4@yandex.ru" # Adding a valid email is safer to avoid --register-unsafely-without-email
 staging=0 # Set to 1 if you're testing your setup to avoid hitting request limits
 
-if [ -f "$data_path/conf/live/$domains/fullchain.pem" ]; then
+# Check for existing certificates using a container to avoid permission issues (certs are owned by root)
+echo "Checking for existing certificates..."
+if docker compose run --rm --entrypoint "test -f /etc/letsencrypt/live/${domains[0]}/fullchain.pem" certbot >/dev/null 2>&1; then
   echo "Existing certificate found for $domains."
   echo "### Starting nginx ..."
   docker compose up -d nginx
   echo "Nginx started with existing certificates."
   exit 0
 fi
-
 
 if [ ! -e "$data_path/conf/options-ssl-nginx.conf" ] || [ ! -e "$data_path/conf/ssl-dhparams.pem" ]; then
   echo "### Downloading recommended TLS parameters ..."
@@ -74,6 +78,7 @@ docker compose run --rm --entrypoint "\
     $domain_args \
     --rsa-key-size $rsa_key_size \
     --agree-tos \
+    --no-eff-email \
     --force-renewal" certbot
 echo
 
