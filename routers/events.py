@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, delete, text
 from sqlalchemy.dialects.postgresql import insert
 from typing import List
+from datetime import datetime
 
 from database import get_async_session
 import schemas
