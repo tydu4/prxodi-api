@@ -11,11 +11,12 @@ data_path="./certbot"
 email="tydu4@yandex.ru" # Adding a valid email is safer to avoid --register-unsafely-without-email
 staging=0 # Set to 1 if you're testing your setup to avoid hitting request limits
 
-if [ -d "$data_path" ]; then
-  read -p "Existing data found for $domains. Continue and replace existing certificate? (y/N) " decision
-  if [ "$decision" != "Y" ] && [ "$decision" != "y" ]; then
-    exit
-  fi
+if [ -f "$data_path/conf/live/$domains/fullchain.pem" ]; then
+  echo "Existing certificate found for $domains."
+  echo "### Starting nginx ..."
+  docker compose up -d nginx
+  echo "Nginx started with existing certificates."
+  exit 0
 fi
 
 
