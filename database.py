@@ -1,4 +1,5 @@
 from typing import AsyncGenerator
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from db.models import Base
 import os
@@ -26,4 +27,5 @@ async def init_async_db():
     async with engine.begin() as conn:
         # Create tables if they don't exist (useful for testing/first run)
         # In production, use Alembic
+        await conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
         await conn.run_sync(Base.metadata.create_all)
