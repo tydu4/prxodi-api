@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   app:
     build: .
@@ -23,7 +21,10 @@ services:
       - ./logs:/app/logs
 
   db:
-    image: pgvector/pgvector:pg16
+    build:
+      context: .
+      dockerfile: Dockerfile.db
+    image: events_db_local
     container_name: events_db_container
     restart: always
     environment:
