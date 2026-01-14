@@ -2,34 +2,37 @@
 
 ## 1. Initial Setup (First Run)
 
-Run this one-liner on your VPS to clone the repo, set up a basic environment, and start everything:
+Run this one-liner on your VPS to set up Docker and start the project:
 
 ```bash
 git clone https://github.com/tydu4/prxodi-api.git && \
 cd prxodi-api && \
 echo -e "DB_USER=postgres\nDB_PASSWORD=change_me_please\nDB_NAME=events_db" > .env && \
 bash setup_server.sh && \
-./deploy.sh
+docker compose up -d --build
 ```
-
-> **Note:** This creates a default `.env` file. You should edit it (`nano .env`) to set your real database password if needed.
 
 ---
 
 ## 2. 🔄 Update Code
 
-To pull the latest changes from GitHub and restart the server automatically:
+To pull the latest changes and restart (the "1-click" update):
 
 ```bash
-./deploy.sh
+git pull && docker compose up -d --build
 ```
 
 ---
 
-## 3. 💥 Clean Re-Install (Fix Problems)
+## 3. 💥 Troubleshooting / Clean
 
-If the database is corrupted or you want to wipe everything and start fresh (deletes all data!):
-
+If you need to view logs:
 ```bash
-./deploy.sh --clean
+docker compose logs -f
+```
+
+If you need to completely restart (wipe data and start fresh):
+```bash
+docker compose down -v
+docker compose up -d --build
 ```
