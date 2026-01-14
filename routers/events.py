@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, delete, text
+from sqlalchemy.orm import selectinload
 from sqlalchemy.dialects.postgresql import insert
 from typing import List
 from datetime import datetime
@@ -163,7 +164,19 @@ async def batch_upsert_events(
                     await session.flush()
 
             # 3. Find Event by Slug
-            stmt = select(models.Event).where(models.Event.slug == event_data.slug)
+            stmt = (
+                select(models.Event)
+                .where(models.Event.slug == event_data.slug)
+                .options(
+                    selectinload(models.Event.tags),
+                    selectinload(models.Event.occurrences),
+                    selectinload(models.Event.tickets),
+                    selectinload(models.Event.images),
+                    selectinload(models.Event.sources),
+                    selectinload(models.Event.organizer),
+                    selectinload(models.Event.default_venue)
+                )
+            )
             res = await session.execute(stmt)
             existing_event = res.scalar_one_or_none()
 
