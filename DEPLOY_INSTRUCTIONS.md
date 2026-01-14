@@ -5,13 +5,11 @@
 Run this one-liner on your VPS to set up Docker and start the project:
 
 ```bash
-```bash
 git clone https://github.com/tydu4/prxodi-api.git && \
 cd prxodi-api && \
 echo -e "DB_USER=postgres\nDB_PASSWORD=change_me_please\nDB_NAME=events_db" > .env && \
 bash setup_server.sh && \
 chmod +x init_ssl.sh && ./init_ssl.sh
-```
 ```
 
 ---
