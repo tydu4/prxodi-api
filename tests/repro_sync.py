@@ -21,7 +21,7 @@ async def test_batch_sync():
             "status": "scheduled",
             "organizer": {"name": "Test Org"},
             "default_venue": {"name": "Test Venue", "city": "Test City", "address": "123 St"},
-            "tags": [{"name": "Music", "slug": "music"}],
+            "tags": [{"name": "Music", "slug": "music"}, {"name": "Test", "slug": "test"}],
             "occurrences": [
                 {"start_time": datetime.now().isoformat(), "status": "scheduled"}
             ],
@@ -34,8 +34,8 @@ async def test_batch_sync():
             "slug": "test-event-2",
             "description": "Description 2",
             "status": "draft",
-             # Missing organizer/venue to test optionals
-             "tags": [],
+             # Same tags to test deduplication in batch
+             "tags": [{"name": "Music", "slug": "music"}, {"name": "Test", "slug": "test"}],
              "occurrences": [],
              "tickets": [],
              "images": [],

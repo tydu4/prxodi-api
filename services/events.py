@@ -206,12 +206,24 @@ async def create_or_update_event(session: AsyncSession, event_data: schemas.Even
         return new_event
 
 async def _get_or_create_tag(session: AsyncSession, tag_data: schemas.TagSchema):
-    stmt = select(models.Tag).where(models.Tag.slug == tag_data.slug)
+    # 1. Check pending objects in session (for batch operations) to avoid duplicate inserts
+    for obj in session.new:
+        if isinstance(obj, models.Tag):
+            if obj.slug == tag_data.slug or obj.name == tag_data.name:
+                return obj
+
+    # 2. Check Database by slug OR name to avoid UniqueViolation
+    stmt = select(models.Tag).where(
+        (models.Tag.slug == tag_data.slug) | (models.Tag.name == tag_data.name)
+    )
     res = await session.execute(stmt)
     tag_obj = res.scalar_one_or_none()
+    
     if not tag_obj:
         tag_obj = models.Tag(name=tag_data.name, slug=tag_data.slug)
         session.add(tag_obj)
+        # No flush here to avoid performance hit; rely on session.new check above for duplicates in same batch
+        
     return tag_obj
 
 async def delete_event(session: AsyncSession, slug: str) -> bool:
